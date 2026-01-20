@@ -28,19 +28,19 @@ test.describe('Invoice Generation', () => {
 
   test('should generate invoice with complete data', async ({ page }) => {
     // Fill in all required fields
-    await page.getByLabel('Business/Trading Name').fill('Test Business Ltd');
-    await page.getByLabel('Email', { exact: true }).fill('business@test.com');
-    await page.getByLabel('Address', { exact: true }).fill('123 Business St');
+    await page.getByLabel('Business/Trading Name *').fill('Test Business Ltd');
+    await page.getByLabel('Email *').fill('business@test.com');
+    await page.getByLabel('Address *').first().fill('123 Business St');
     
-    await page.getByLabel('Bank Name').fill('Test Bank');
-    await page.getByLabel('Account Name').fill('Test Business Ltd');
-    await page.getByLabel('Account Number').fill('12-3456-7890123-00');
+    await page.getByLabel('Bank Name *').fill('Test Bank');
+    await page.getByLabel('Account Name *').fill('Test Business Ltd');
+    await page.getByLabel('Account Number *').fill('12-3456-7890123-00');
     
-    await page.getByLabel('Client Name').fill('Test Client');
-    await page.getByLabel('Address').nth(1).fill('456 Client Ave');
+    await page.getByLabel('Client Name *').fill('Test Client');
+    await page.getByLabel('Address *').nth(1).fill('456 Client Ave');
     
-    await page.getByLabel('Invoice Number').fill('INV-001');
-    await page.getByLabel('Invoice Date').fill('2026-01-20');
+    await page.getByLabel('Invoice Number *').fill('INV-001');
+    await page.getByLabel('Invoice Date *').fill('2026-01-20');
     
     // Add at least one item
     await page.getByRole('button', { name: /Add Item/i }).click();
@@ -57,31 +57,31 @@ test.describe('Invoice Generation', () => {
 
   test('should reset form to initial state', async ({ page }) => {
     // Fill in some fields
-    await page.getByLabel('Business/Trading Name').fill('Test Business');
-    await page.getByLabel('Invoice Number').fill('INV-001');
+    await page.getByLabel('Business/Trading Name *').fill('Test Business');
+    await page.getByLabel('Invoice Number *').fill('INV-001');
     
     // Reset form
     await page.getByRole('button', { name: 'Reset Form' }).click();
     
     // Verify fields are cleared (except saved business details)
-    await expect(page.getByLabel('Invoice Number')).toHaveValue('');
+    await expect(page.getByLabel('Invoice Number *')).toHaveValue('');
   });
 
   test('should handle print invoice action', async ({ page }) => {
     // Fill in minimal required data
-    await page.getByLabel('Business/Trading Name').fill('Print Test Business');
-    await page.getByLabel('Email', { exact: true }).fill('print@test.com');
-    await page.getByLabel('Address', { exact: true }).fill('Print Address');
+    await page.getByLabel('Business/Trading Name *').fill('Print Test Business');
+    await page.getByLabel('Email *').fill('print@test.com');
+    await page.getByLabel('Address *').first().fill('Print Address');
     
-    await page.getByLabel('Bank Name').fill('Print Bank');
-    await page.getByLabel('Account Name').fill('Print Account');
-    await page.getByLabel('Account Number').fill('12-3456-7890123-00');
+    await page.getByLabel('Bank Name *').fill('Print Bank');
+    await page.getByLabel('Account Name *').fill('Print Account');
+    await page.getByLabel('Account Number *').fill('12-3456-7890123-00');
     
-    await page.getByLabel('Client Name').fill('Print Client');
-    await page.getByLabel('Address').nth(1).fill('Print Client Address');
+    await page.getByLabel('Client Name *').fill('Print Client');
+    await page.getByLabel('Address *').nth(1).fill('Print Client Address');
     
-    await page.getByLabel('Invoice Number').fill('PRINT-001');
-    await page.getByLabel('Invoice Date').fill('2026-01-20');
+    await page.getByLabel('Invoice Number *').fill('PRINT-001');
+    await page.getByLabel('Invoice Date *').fill('2026-01-20');
     
     // Listen for print dialog
     page.on('dialog', dialog => dialog.accept());

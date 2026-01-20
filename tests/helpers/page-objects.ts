@@ -55,16 +55,16 @@ export class InvoiceGeneratorPage {
     this.page = page;
 
     // Business Details
-    this.businessName = page.getByLabel('Business/Trading Name');
+    this.businessName = page.getByLabel('Business/Trading Name *');
     this.gstNumber = page.getByLabel('GST Number (optional)');
-    this.businessEmail = page.getByLabel('Email', { exact: true });
-    this.businessPhone = page.getByLabel('Phone', { exact: true });
-    this.businessAddress = page.getByLabel('Address', { exact: true });
+    this.businessEmail = page.getByLabel('Email *');
+    this.businessPhone = page.locator('#traderPhone');
+    this.businessAddress = page.getByLabel('Address *').first();
 
     // Bank Details
-    this.bankName = page.getByLabel('Bank Name');
-    this.accountName = page.getByLabel('Account Name');
-    this.accountNumber = page.getByLabel('Account Number');
+    this.bankName = page.getByLabel('Bank Name *');
+    this.accountName = page.getByLabel('Account Name *');
+    this.accountNumber = page.getByLabel('Account Number *');
 
     // Buttons
     this.saveDetailsButton = page.getByRole('button', { name: 'Save My Details' });
@@ -72,17 +72,17 @@ export class InvoiceGeneratorPage {
 
     // Client Details
     this.clientSelector = page.locator('select').first();
-    this.clientName = page.getByLabel('Client Name');
-    this.clientEmail = page.getByLabel('Email').nth(1);
-    this.clientPhone = page.getByLabel('Phone').nth(1);
-    this.clientAddress = page.getByLabel('Address').nth(1);
+    this.clientName = page.getByLabel('Client Name *');
+    this.clientEmail = page.locator('#clientEmail');
+    this.clientPhone = page.locator('#clientPhone');
+    this.clientAddress = page.getByLabel('Address *').nth(1);
     this.saveClientButton = page.getByRole('button', { name: 'Save Client' });
     this.clearClientButton = page.getByRole('button', { name: 'Clear' }).nth(1);
     this.deleteClientButton = page.getByRole('button', { name: 'Delete Selected Client' });
 
     // Invoice Details
-    this.invoiceNumber = page.getByLabel('Invoice Number');
-    this.invoiceDate = page.getByLabel('Invoice Date');
+    this.invoiceNumber = page.getByLabel('Invoice Number *');
+    this.invoiceDate = page.getByLabel('Invoice Date *');
     this.dueDate = page.getByLabel('Due Date');
 
     // Invoice Items

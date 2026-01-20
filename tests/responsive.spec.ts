@@ -6,7 +6,7 @@ test.describe('Responsive Design', () => {
     await page.goto('/');
     
     // Check that main elements are visible
-    await expect(page.getByLabel('Business/Trading Name')).toBeVisible();
+    await expect(page.getByLabel('Business/Trading Name *')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Generate Invoice' })).toBeVisible();
   });
 
@@ -14,15 +14,15 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 768, height: 1024 }); // iPad
     await page.goto('/');
     
-    await expect(page.getByLabel('Business/Trading Name')).toBeVisible();
-    await expect(page.getByLabel('Client Name')).toBeVisible();
+    await expect(page.getByLabel('Business/Trading Name *')).toBeVisible();
+    await expect(page.getByLabel('Client Name *')).toBeVisible();
   });
 
   test('should display correctly on desktop viewport', async ({ page }) => {
     await page.setViewportSize({ width: 1920, height: 1080 }); // Desktop
     await page.goto('/');
     
-    await expect(page.getByLabel('Business/Trading Name')).toBeVisible();
+    await expect(page.getByLabel('Business/Trading Name *')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Generate Invoice' })).toBeVisible();
   });
 
@@ -55,7 +55,7 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
     
-    const input = page.getByLabel('Business/Trading Name');
+    const input = page.getByLabel('Business/Trading Name *');
     const fontSize = await input.evaluate((el) => {
       return window.getComputedStyle(el).fontSize;
     });
@@ -69,7 +69,7 @@ test.describe('Responsive Design', () => {
     await page.setViewportSize({ width: 667, height: 375 }); // Landscape
     await page.goto('/');
     
-    await expect(page.getByLabel('Business/Trading Name')).toBeVisible();
+    await expect(page.getByLabel('Business/Trading Name *')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Generate Invoice' })).toBeVisible();
   });
 });

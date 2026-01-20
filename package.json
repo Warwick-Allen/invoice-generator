@@ -15,11 +15,18 @@
     "trace": "playwright show-trace",
     "codegen": "playwright codegen https://warwick-allen.github.io/invoice-generator/"
   },
-  "keywords": ["playwright", "testing", "e2e", "invoice", "nz"],
+  "keywords": [
+    "playwright",
+    "testing",
+    "e2e",
+    "invoice",
+    "nz"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.41.0",
-    "@types/node": "^20.11.0"
+    "@types/node": "^20.11.0",
+    "http-server": "^14.1.1"
   }
 }

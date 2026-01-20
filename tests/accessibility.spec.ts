@@ -28,10 +28,10 @@ test.describe('Accessibility', () => {
 
   test('form fields should have associated labels', async ({ page }) => {
     // All input fields should be accessible via their labels
-    const businessName = page.getByLabel('Business/Trading Name');
-    const email = page.getByLabel('Email', { exact: true });
-    const clientName = page.getByLabel('Client Name');
-    const invoiceNumber = page.getByLabel('Invoice Number');
+    const businessName = page.getByLabel('Business/Trading Name *');
+    const email = page.getByLabel('Email *');
+    const clientName = page.getByLabel('Client Name *');
+    const invoiceNumber = page.getByLabel('Invoice Number *');
     
     await expect(businessName).toBeVisible();
     await expect(email).toBeVisible();
@@ -54,14 +54,14 @@ test.describe('Accessibility', () => {
   test('required fields should be marked appropriately', async ({ page }) => {
     // Check that required fields have the required attribute or visual indicator
     const requiredFields = [
-      page.getByLabel('Business/Trading Name'),
-      page.getByLabel('Email', { exact: true }),
-      page.getByLabel('Address', { exact: true }),
-      page.getByLabel('Bank Name'),
-      page.getByLabel('Account Name'),
-      page.getByLabel('Client Name'),
-      page.getByLabel('Invoice Number'),
-      page.getByLabel('Invoice Date'),
+      page.getByLabel('Business/Trading Name *'),
+      page.getByLabel('Email *'),
+      page.getByLabel('Address *').first(),
+      page.getByLabel('Bank Name *'),
+      page.getByLabel('Account Name *'),
+      page.getByLabel('Client Name *'),
+      page.getByLabel('Invoice Number *'),
+      page.getByLabel('Invoice Date *'),
     ];
     
     for (const field of requiredFields) {

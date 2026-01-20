@@ -11,9 +11,16 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: 'https://warwick-allen.github.io/invoice-generator/',
+    baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+  },
+
+  webServer: {
+    command: 'python3 -m http.server 3000',
+    port: 3000,
+    reuseExistingServer: true,
+    timeout: 10000,
   },
 
   projects: [
