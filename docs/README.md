@@ -1,261 +1,247 @@
-# NZ Tax Invoice Generator - Test Suite
+# Test Suite Documentation
 
-Comprehensive end-to-end test suite for the NZ Tax Invoice Generator application deployed at https://warwick-allen.github.io/invoice-generator/
+Complete documentation for the NZ Tax Invoice Generator test suite.
 
-## Overview
+---
 
-This test suite uses [Playwright](https://playwright.dev/) to perform automated testing of the invoice generator application. Tests cover all major functionality including business details, client management, invoice creation, calculations, and user interface behaviour.
+## 📚 Documentation Index
 
-## Test Coverage
+### Getting Started
+- **[README_START_HERE.md](README_START_HERE.md)** ⭐ - Complete introduction and walkthrough
+- **[QUICK_START.md](QUICK_START.md)** - Quick command reference
+- **[INDEX.md](INDEX.md)** - Navigation hub for all documentation
 
-### Business Details Tests (`business-details.spec.ts`)
-- Display of all business detail fields
-- Validation of required fields
-- Saving business details to local storage
-- Data persistence across sessions
-- Clear functionality
+### Guides
+- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - Comprehensive guide for writing and debugging tests
+- **[INTEGRATION.md](INTEGRATION.md)** - CI/CD integration strategies and workflows
+- **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Architecture and file organisation
 
-### Bank Details Tests (`bank-details.spec.ts`)
-- Display of bank account fields
-- Account name verification warning
-- Required field validation
-- Data persistence
+---
 
-### Client Details Tests (`client-details.spec.ts`)
-- Client dropdown selector
-- Adding new clients
-- Saving clients to list
-- Loading saved clients
-- Deleting clients
-- Required field validation
+## 🚀 Quick Start
 
-### Invoice Details Tests (`invoice-details.spec.ts`)
-- Invoice number, date, and due date fields
-- Required field validation
-- Date field functionality
-
-### Invoice Items Tests (`invoice-items.spec.ts`)
-- Adding invoice items
-- Removing invoice items
-- Subtotal calculations
-- GST calculations (15%)
-- Total calculations
-- Dynamic updates
-
-### Calculation Tests (`calculations.spec.ts`)
-- GST calculation accuracy (15% rate)
-- Single and multiple item totals
-- Decimal rounding (2 decimal places)
-- Calculation updates on item changes
-
-### Invoice Generation Tests (`invoice-generation.spec.ts`)
-- Generate invoice functionality
-- Print invoice functionality
-- Reset form functionality
-- Required field validation before generation
-
-### Integration Tests (`integration.spec.ts`)
-- Complete end-to-end invoice creation workflow
-- Data persistence across sessions
-- Multiple client management
-- Switching between saved clients
-
-### Accessibility Tests (`accessibility.spec.ts`)
-- Page title and heading structure
-- Form labels and associations
-- Keyboard navigation
-- Required field indicators
-- Section organisation
-
-### Responsive Design Tests (`responsive.spec.ts`)
-- Mobile viewport (375x667, 320x568)
-- Tablet viewport (768x1024)
-- Desktop viewport (1920x1080)
-- Landscape orientation
-- Touch target sizing
-- Readable font sizes
-
-## Prerequisites
-
-- Node.js (v18 or higher recommended)
-- npm or yarn package manager
-
-## Installation
-
-1. Navigate to the test directory:
 ```bash
-cd invoice-generator-tests
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Install Playwright browsers:
-```bash
-npx playwright install
-```
-
-## Running Tests
-
-### Run all tests
-```bash
-npm test
-```
-
-### Run tests in headed mode (see the browser)
-```bash
-npm run test:headed
-```
-
-### Run tests in UI mode (interactive)
-```bash
+# Run tests in interactive UI mode
 npm run test:ui
-```
 
-### Run tests in debug mode
-```bash
-npm run test:debug
-```
+# Run all tests (headless)
+npm test
 
-### Run specific test file
-```bash
-npx playwright test tests/business-details.spec.ts
-```
-
-### Run tests for specific browser
-```bash
-npx playwright test --project=chromium
-npx playwright test --project=firefox
-npx playwright test --project=webkit
-```
-
-### View test report
-```bash
+# View test report
 npm run report
 ```
 
-## Test Configuration
+---
 
-The test configuration is defined in `playwright.config.ts`:
+## 📖 What to Read
 
-- **Base URL**: https://warwick-allen.github.io/invoice-generator/
-- **Browsers**: Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari
-- **Retries**: 2 retries on CI, 0 locally
-- **Reporters**: HTML report and list
-- **Screenshots**: Captured on failure
-- **Trace**: Captured on first retry
+### New to the Test Suite?
+1. Start with **[README_START_HERE.md](README_START_HERE.md)**
+2. Try running tests with `npm run test:ui`
+3. Read **[QUICK_START.md](QUICK_START.md)** for commands
 
-## Project Structure
+### Writing Tests?
+1. Read **[TESTING_GUIDE.md](TESTING_GUIDE.md)**
+2. Review existing tests in `../tests/` directory
+3. Use page objects from `../tests/helpers/page-objects.ts`
 
+### Setting Up CI/CD?
+1. Read **[INTEGRATION.md](INTEGRATION.md)**
+2. Review `.github/workflows/playwright.yml`
+3. Customise for your needs
+
+### Understanding Architecture?
+1. Read **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)**
+2. Review `playwright.config.ts`
+3. Study the Page Object Model implementation
+
+---
+
+## 🎯 Test Coverage
+
+### Features Tested (100%)
+- ✅ Business Details Form
+- ✅ Bank Account Details
+- ✅ Client Management (CRUD)
+- ✅ Invoice Details
+- ✅ Invoice Items
+- ✅ Calculations (GST 15%)
+- ✅ Invoice Generation
+- ✅ Workflows (E2E)
+- ✅ Accessibility
+- ✅ Responsive Design
+
+### Browsers (5 Configurations)
+- ✅ Chromium (Desktop)
+- ✅ Firefox (Desktop)
+- ✅ WebKit/Safari (Desktop)
+- ✅ Mobile Chrome (Pixel 5)
+- ✅ Mobile Safari (iPhone 12)
+
+### Test Metrics
+- **Test Files:** 11 specification files
+- **Test Cases:** 80+
+- **Helper Files:** 2 (Page Objects + Test Data)
+- **Browsers:** 5 configurations
+- **Total Executions:** 400+ per run
+
+---
+
+## 💻 Common Commands
+
+```bash
+# Interactive UI mode (best for development)
+npm run test:ui
+
+# Run all tests
+npm test
+
+# Run with browser visible
+npm run test:headed
+
+# Run specific browser
+npm run test:chromium
+npm run test:firefox
+npm run test:webkit
+
+# Run mobile tests
+npm run test:mobile
+
+# Debug mode
+npm run test:debug
+
+# View HTML report
+npm run report
+
+# Generate tests by recording
+npm run codegen
 ```
-invoice-generator-tests/
-├── tests/
-│   ├── business-details.spec.ts    # Business information tests
-│   ├── bank-details.spec.ts        # Bank account tests
-│   ├── client-details.spec.ts      # Client management tests
-│   ├── invoice-details.spec.ts     # Invoice metadata tests
-│   ├── invoice-items.spec.ts       # Line items tests
-│   ├── calculations.spec.ts        # GST and totals tests
-│   ├── invoice-generation.spec.ts  # Generation and print tests
-│   ├── integration.spec.ts         # End-to-end workflow tests
-│   ├── accessibility.spec.ts       # A11y tests
-│   └── responsive.spec.ts          # Responsive design tests
-├── playwright.config.ts             # Playwright configuration
-├── package.json                     # Dependencies and scripts
-├── .gitignore                       # Git ignore rules
-└── README.md                        # This file
+
+---
+
+## 🎨 Test Architecture
+
+### Pattern: Page Object Model
+- Separates test logic from UI interaction
+- Centralised selectors and methods
+- Easy to maintain and update
+- Type-safe with TypeScript
+
+### Structure
+```
+tests/
+├── helpers/
+│   ├── page-objects.ts    # Page Object Model classes
+│   └── test-data.ts       # Test data and utilities
+└── *.spec.ts              # Test specifications
 ```
 
-## Writing New Tests
+---
 
-To add new tests:
+## 📝 Writing Tests
 
-1. Create a new `.spec.ts` file in the `tests/` directory
-2. Import Playwright test utilities:
+### Basic Pattern
 ```typescript
 import { test, expect } from '@playwright/test';
-```
 
-3. Write your tests using the Playwright API:
-```typescript
-test.describe('Feature Name', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-  });
-
-  test('should do something', async ({ page }) => {
-    // Test implementation
-  });
+test('should do something', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Field').fill('value');
+  await page.getByRole('button', { name: 'Submit' }).click();
+  await expect(page.getByText('Success')).toBeVisible();
 });
 ```
 
-## Best Practices
+### Using Page Objects
+```typescript
+import { InvoiceGeneratorPage } from './helpers/page-objects';
+import { testBusinessDetails } from './helpers/test-data';
 
-1. **Use appropriate selectors**: Prefer role-based and label-based selectors over CSS selectors
-2. **Wait appropriately**: Use Playwright's auto-waiting features; add explicit waits only when necessary
-3. **Test in isolation**: Each test should be independent and not rely on state from other tests
-4. **Clear, descriptive names**: Use descriptive test names that explain what is being tested
-5. **Organise logically**: Group related tests using `test.describe()` blocks
-6. **Clean up**: Reset state between tests using `beforeEach` and `afterEach` hooks
-
-## Troubleshooting
-
-### Tests are flaky
-- Increase timeout values in `playwright.config.ts`
-- Add explicit waits using `await page.waitForTimeout(ms)`
-- Use `await page.waitForSelector()` for specific elements
-
-### Selectors not working
-- Use the Playwright Inspector to debug selectors: `npx playwright test --debug`
-- Use the Playwright UI mode to interactively develop tests: `npm run test:ui`
-
-### Tests fail on CI but pass locally
-- Check browser versions match
-- Verify network conditions
-- Ensure proper wait conditions are used
-
-## CI/CD Integration
-
-This test suite can be integrated into CI/CD pipelines. Example GitHub Actions configuration:
-
-```yaml
-- name: Install dependencies
-  run: npm ci
-  working-directory: ./invoice-generator-tests
-
-- name: Install Playwright Browsers
-  run: npx playwright install --with-deps
-  working-directory: ./invoice-generator-tests
-
-- name: Run Playwright tests
-  run: npm test
-  working-directory: ./invoice-generator-tests
-
-- name: Upload test results
-  uses: actions/upload-artifact@v3
-  if: always()
-  with:
-    name: playwright-report
-    path: invoice-generator-tests/playwright-report/
+test('should save business details', async ({ page }) => {
+  const invoicePage = new InvoiceGeneratorPage(page);
+  await invoicePage.goto();
+  await invoicePage.fillBusinessDetails(testBusinessDetails.valid);
+  await invoicePage.saveBusinessDetails();
+  
+  await expect(invoicePage.businessName).toHaveValue(testBusinessDetails.valid.name);
+});
 ```
 
-## Contributing
+---
 
-When adding new features to the invoice generator app, please:
+## 🐛 Debugging
 
-1. Add corresponding tests to cover the new functionality
-2. Update existing tests if behaviour changes
-3. Ensure all tests pass before submitting changes
-4. Update this README if new test categories are added
+### Interactive UI Mode (Recommended)
+```bash
+npm run test:ui
+```
+- Visual test runner
+- Step through tests
+- Time-travel debugging
+- See test execution
 
-## Support
+### Debug Mode
+```bash
+npm run test:debug
+```
+- Playwright Inspector
+- Step-by-step execution
+- Inspect DOM
+- View network activity
 
-For issues with:
-- The test suite: Review Playwright documentation at https://playwright.dev/
-- The invoice generator app: Visit https://warwick-allen.github.io/invoice-generator/
+### View Reports
+```bash
+npm run report
+```
+- HTML report with details
+- Screenshots on failure
+- Execution traces
+- Pass/fail statistics
 
-## Licence
+---
 
-This test suite is provided as-is for testing the NZ Tax Invoice Generator application.
+## 🔄 CI/CD Integration
+
+The test suite includes a GitHub Actions workflow (`.github/workflows/playwright.yml`) that:
+- Runs on push, PR, and daily schedule
+- Tests across all 5 browsers
+- Uploads reports and screenshots
+- Retains results for 30 days
+
+See **[INTEGRATION.md](INTEGRATION.md)** for detailed CI/CD setup options.
+
+---
+
+## 📚 Additional Resources
+
+### External Documentation
+- [Playwright Docs](https://playwright.dev/)
+- [Playwright API](https://playwright.dev/docs/api/class-playwright)
+- [Best Practices](https://playwright.dev/docs/best-practices)
+
+### Local Files
+- Root: `../README.md` - Main project README
+- Root: `../GETTING_STARTED_WITH_TESTS.md` - Quick start
+- Root: `../VERIFICATION_CHECKLIST.md` - Verification steps
+
+---
+
+## ✅ Quality Standards
+
+### Test Quality
+- ✅ Descriptive test names
+- ✅ Clear assertions
+- ✅ Proper waits (auto-waiting)
+- ✅ Page Object pattern
+- ✅ Reusable test data
+
+### Code Quality
+- ✅ TypeScript for type safety
+- ✅ Consistent formatting
+- ✅ Clear comments
+- ✅ No hardcoded values
+- ✅ DRY principles
+
+---
+
+**For more information, see the individual guide files listed above.**

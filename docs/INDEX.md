@@ -3,14 +3,14 @@
 ## 🎯 Quick Navigation
 
 ### 🚀 Getting Started
-- **[QUICK_START.md](QUICK_START.md)** ⭐ **START HERE** - Quick commands and first test run
-- **[SETUP_COMPLETE.md](SETUP_COMPLETE.md)** - Setup verification and completion checklist
-- **[README.md](README.md)** - Complete project documentation
+- **[README_START_HERE.md](README_START_HERE.md)** ⭐ **START HERE** - Complete introduction
+- **[QUICK_START.md](QUICK_START.md)** - Quick commands and first test run
+- **[README.md](README.md)** - Complete test suite documentation
 
 ### 📖 Documentation
 - **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - Comprehensive guide for writing and debugging tests
-- **[SUMMARY.md](SUMMARY.md)** - Project overview and features
 - **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Detailed file structure and architecture
+- **[INTEGRATION.md](INTEGRATION.md)** - CI/CD integration strategies
 
 ### 🧪 Test Files
 All test files are located in the `tests/` directory:
