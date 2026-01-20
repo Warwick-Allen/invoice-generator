@@ -176,4 +176,110 @@ test.describe('Invoice Generation', () => {
     const periodText = await preview.getByText(/Period:/).count();
     expect(periodText).toBe(0);
   });
+
+  test('should generate invoice without GST when checkbox is unchecked', async ({ page }) => {
+    // Fill in all required fields
+    await page.getByLabel('Business/Trading Name *').fill('No GST Business');
+    await page.getByLabel('Email *').fill('nogst@test.com');
+    await page.getByLabel('Address *').first().fill('123 No GST St');
+    
+    await page.getByLabel('Bank Name *').fill('No GST Bank');
+    await page.getByLabel('Account Name *').fill('No GST Business');
+    await page.getByLabel('Account Number *').fill('12-3456-7890123-00');
+    
+    await page.getByLabel('Client Name *').fill('No GST Client');
+    await page.getByLabel('Address *').nth(1).fill('456 No GST Ave');
+    
+    await page.getByLabel('Invoice Number *').fill('NO-GST-001');
+    await page.getByLabel('Invoice Date *').fill('2026-01-20');
+    
+    // Uncheck GST
+    await page.locator('#includeGST').uncheck();
+    
+    // Add at least one item
+    const items = page.locator('.invoice-item');
+    const item = items.first();
+    await item.locator('.item-description').fill('Service');
+    await item.locator('.item-quantity').fill('1');
+    await item.locator('.item-rate').fill('1000');
+    
+    // Generate invoice
+    await page.getByRole('button', { name: 'Generate Invoice' }).click();
+    
+    // Wait for invoice to be generated
+    await page.waitForTimeout(1000);
+    
+    // Verify the invoice preview is visible
+    const preview = page.locator('.invoice-preview');
+    await expect(preview).toBeVisible();
+    
+    // Verify invoice title is "INVOICE" not "TAX INVOICE"
+    const invoiceTitle = preview.locator('.invoice-title');
+    await expect(invoiceTitle).toHaveText('INVOICE');
+    const taxInvoiceCount = await preview.getByText('TAX INVOICE').count();
+    expect(taxInvoiceCount).toBe(0);
+    
+    // Verify GST row is NOT displayed in the invoice
+    const gstInPreview = await preview.getByText(/GST \(15%\):/).count();
+    expect(gstInPreview).toBe(0);
+    
+    // Verify labels don't mention GST
+    await expect(preview).toContainText('Subtotal:');
+    await expect(preview).toContainText('Total:');
+    
+    // Verify total is 1000 (no GST added)
+    const totalText = await preview.locator('.invoice-totals .total').textContent();
+    expect(totalText).toContain('$1000.00');
+  });
+
+  test('should generate tax invoice with GST when checkbox is checked', async ({ page }) => {
+    // Fill in all required fields
+    await page.getByLabel('Business/Trading Name *').fill('With GST Business');
+    await page.getByLabel('Email *').fill('withgst@test.com');
+    await page.getByLabel('Address *').first().fill('123 GST St');
+    
+    await page.getByLabel('Bank Name *').fill('GST Bank');
+    await page.getByLabel('Account Name *').fill('With GST Business');
+    await page.getByLabel('Account Number *').fill('12-3456-7890123-00');
+    
+    await page.getByLabel('Client Name *').fill('GST Client');
+    await page.getByLabel('Address *').nth(1).fill('456 GST Ave');
+    
+    await page.getByLabel('Invoice Number *').fill('GST-001');
+    await page.getByLabel('Invoice Date *').fill('2026-01-20');
+    
+    // GST checkbox should be checked by default, but verify
+    await expect(page.locator('#includeGST')).toBeChecked();
+    
+    // Add at least one item
+    const items = page.locator('.invoice-item');
+    const item = items.first();
+    await item.locator('.item-description').fill('Service');
+    await item.locator('.item-quantity').fill('1');
+    await item.locator('.item-rate').fill('1000');
+    
+    // Generate invoice
+    await page.getByRole('button', { name: 'Generate Invoice' }).click();
+    
+    // Wait for invoice to be generated
+    await page.waitForTimeout(1000);
+    
+    // Verify the invoice preview is visible
+    const preview = page.locator('.invoice-preview');
+    await expect(preview).toBeVisible();
+    
+    // Verify invoice title is "TAX INVOICE"
+    await expect(preview.getByText('TAX INVOICE')).toBeVisible();
+    
+    // Verify GST row IS displayed in the invoice
+    await expect(preview.getByText(/GST \(15%\):/)).toBeVisible();
+    
+    // Verify labels mention GST
+    await expect(preview).toContainText('Subtotal (excl. GST):');
+    await expect(preview).toContainText('Total (incl. GST):');
+    
+    // Verify total is 1150 (1000 + 15% GST)
+    const totalText = await preview.locator('.invoice-totals .total').textContent();
+    expect(totalText).toContain('$1150.00');
+  });
 });

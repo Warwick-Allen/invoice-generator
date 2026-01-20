@@ -424,18 +424,29 @@
         </div>
         <button onclick="addInvoiceItem()">+ Add Item</button>
 
+        <!-- GST Option -->
+        <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 4px;">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+                <input type="checkbox" id="includeGST" onchange="saveGSTPreference(); calculateTotals();" checked style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                <span style="font-weight: 600;">Include GST (15%)</span>
+            </label>
+            <p style="margin: 8px 0 0 28px; font-size: 13px; color: #666;">
+                Uncheck this if you are not GST-registered or if this invoice is GST-exempt
+            </p>
+        </div>
+
         <!-- Totals -->
         <div class="totals">
             <div class="totals-row">
-                <span>Subtotal (excl. GST):</span>
+                <span id="subtotalLabel">Subtotal (excl. GST):</span>
                 <span id="subtotal">$0.00</span>
             </div>
-            <div class="totals-row">
+            <div class="totals-row" id="gstRow">
                 <span>GST (15%):</span>
                 <span id="gstAmount">$0.00</span>
             </div>
             <div class="totals-row total">
-                <span>Total (incl. GST):</span>
+                <span id="totalLabel">Total (incl. GST):</span>
                 <span id="total">$0.00</span>
             </div>
         </div>
@@ -487,7 +498,8 @@
         window.onload = function() {
             loadTraderDetails();
             loadClients();
-            addInvoiceItem(); // Add first item
+            loadGSTPreference();
+            addInvoiceItem(); // Add first item - this will call calculateTotals()
             
             // Set today's date as default
             const today = new Date().toISOString().split('T')[0];
@@ -497,6 +509,21 @@
             const lastInvoiceNum = getCookie('nz_invoice_last_number') || 0;
             document.getElementById('invoiceNumber').value = 'INV-' + String(parseInt(lastInvoiceNum) + 1).padStart(4, '0');
         };
+
+        // GST Preference Functions
+        function saveGSTPreference() {
+            const includeGST = document.getElementById('includeGST').checked;
+            setCookie('nz_invoice_include_gst', includeGST);
+        }
+
+        function loadGSTPreference() {
+            const includeGST = getCookie('nz_invoice_include_gst');
+            // If preference exists, use it; otherwise default to true (checked)
+            if (includeGST !== null) {
+                document.getElementById('includeGST').checked = includeGST;
+            }
+            // Note: calculateTotals() will be called by addInvoiceItem() after this
+        }
 
         // Trader Details Functions
         function saveTraderDetails() {
@@ -754,8 +781,24 @@
                 subtotal += amount;
             });
 
-            const gst = subtotal * 0.15; // NZ GST is 15%
+            const includeGST = document.getElementById('includeGST').checked;
+            const gst = includeGST ? subtotal * 0.15 : 0; // NZ GST is 15%
             const total = subtotal + gst;
+
+            // Update labels and visibility based on GST inclusion
+            const gstRow = document.getElementById('gstRow');
+            const subtotalLabel = document.getElementById('subtotalLabel');
+            const totalLabel = document.getElementById('totalLabel');
+            
+            if (includeGST) {
+                gstRow.style.display = 'flex';
+                subtotalLabel.textContent = 'Subtotal (excl. GST):';
+                totalLabel.textContent = 'Total (incl. GST):';
+            } else {
+                gstRow.style.display = 'none';
+                subtotalLabel.textContent = 'Subtotal:';
+                totalLabel.textContent = 'Total:';
+            }
 
             document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
             document.getElementById('gstAmount').textContent = '$' + gst.toFixed(2);
@@ -840,15 +883,16 @@
             }
 
             // Calculate totals
+            const includeGST = document.getElementById('includeGST').checked;
             const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
-            const gst = subtotal * 0.15;
+            const gst = includeGST ? subtotal * 0.15 : 0;
             const total = subtotal + gst;
 
             // Generate invoice HTML
             const invoiceHTML = `
                 <div class="invoice-header">
                     <div>
-                        <div class="invoice-title">TAX INVOICE</div>
+                        <div class="invoice-title">${includeGST ? 'TAX INVOICE' : 'INVOICE'}</div>
                     </div>
                     <div class="invoice-details">
                         <strong>Invoice #:</strong> ${invoiceNumber}<br>
@@ -918,15 +962,17 @@
 
                 <div class="invoice-totals">
                     <div class="totals-row">
-                        <span>Subtotal (excl. GST):</span>
+                        <span>${includeGST ? 'Subtotal (excl. GST):' : 'Subtotal:'}</span>
                         <span>$${subtotal.toFixed(2)}</span>
                     </div>
+                    ${includeGST ? `
                     <div class="totals-row">
                         <span>GST (15%):</span>
                         <span>$${gst.toFixed(2)}</span>
                     </div>
+                    ` : ''}
                     <div class="totals-row total">
-                        <span>Total (incl. GST):</span>
+                        <span>${includeGST ? 'Total (incl. GST):' : 'Total:'}</span>
                         <span>$${total.toFixed(2)}</span>
                     </div>
                 </div>
@@ -986,6 +1032,9 @@
                 document.getElementById('dueDate').value = '';
                 document.getElementById('periodStart').value = '';
                 document.getElementById('periodEnd').value = '';
+                
+                // Reset GST checkbox to checked (default)
+                document.getElementById('includeGST').checked = true;
 
                 // Generate next invoice number
                 const lastInvoiceNum = getCookie('nz_invoice_last_number') || 0;

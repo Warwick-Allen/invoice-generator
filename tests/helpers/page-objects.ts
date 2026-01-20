@@ -42,6 +42,9 @@ export class InvoiceGeneratorPage {
 
   // Invoice Items
   readonly addItemButton: Locator;
+  
+  // GST Option
+  readonly includeGSTCheckbox: Locator;
 
   // Totals
   readonly subtotalText: Locator;
@@ -91,6 +94,9 @@ export class InvoiceGeneratorPage {
 
     // Invoice Items
     this.addItemButton = page.getByRole('button', { name: /Add Item/i });
+    
+    // GST Option
+    this.includeGSTCheckbox = page.locator('#includeGST');
 
     // Totals
     this.subtotalText = page.getByText(/Subtotal.*\$/i);

@@ -10,9 +10,6 @@ test.describe('Invoice Calculations', () => {
   });
 
   test('should calculate GST at 15% rate', async ({ page }) => {
-    // Verify GST label shows 15%
-    await expect(page.getByText('GST (15%)')).toBeVisible();
-    
     // Test with a known value
     await invoicePage.fillGenericItem(0, {
       description: 'Test Item',
@@ -20,7 +17,12 @@ test.describe('Invoice Calculations', () => {
       unitPrice: 100
     });
     
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(200);
+    
+    // Verify GST label shows 15% in totals section
+    const gstRow = page.locator('#gstRow');
+    await expect(gstRow).toBeVisible();
+    await expect(gstRow).toContainText('GST (15%):');
     
     const subtotal = await invoicePage.getSubtotalAmount();
     const gst = await invoicePage.getGSTAmount();
@@ -245,5 +247,137 @@ test.describe('Invoice Calculations', () => {
     expect(subtotal).toBe(0);
     expect(gst).toBe(0);
     expect(total).toBe(0);
+  });
+
+  test('should display GST checkbox checked by default', async ({ page }) => {
+    await expect(invoicePage.includeGSTCheckbox).toBeVisible();
+    await expect(invoicePage.includeGSTCheckbox).toBeChecked();
+  });
+
+  test('should exclude GST when checkbox is unchecked', async ({ page }) => {
+    await invoicePage.fillGenericItem(0, {
+      description: 'Test Item',
+      quantity: 1,
+      unitPrice: 100
+    });
+    
+    await page.waitForTimeout(100);
+    
+    // Verify GST is initially included
+    let gst = await invoicePage.getGSTAmount();
+    let total = await invoicePage.getTotalAmount();
+    expect(gst).toBeCloseTo(15, 2);
+    expect(total).toBeCloseTo(115, 2);
+    
+    // Uncheck GST
+    await invoicePage.includeGSTCheckbox.uncheck();
+    await page.waitForTimeout(100);
+    
+    // Verify GST is now zero and total equals subtotal
+    gst = await invoicePage.getGSTAmount();
+    total = await invoicePage.getTotalAmount();
+    const subtotal = await invoicePage.getSubtotalAmount();
+    
+    expect(gst).toBe(0);
+    expect(total).toBe(100);
+    expect(total).toBe(subtotal);
+  });
+
+  test('should include GST when checkbox is rechecked', async ({ page }) => {
+    await invoicePage.fillGenericItem(0, {
+      description: 'Test Item',
+      quantity: 1,
+      unitPrice: 100
+    });
+    
+    await page.waitForTimeout(100);
+    
+    // Uncheck GST
+    await invoicePage.includeGSTCheckbox.uncheck();
+    await page.waitForTimeout(100);
+    
+    let gst = await invoicePage.getGSTAmount();
+    expect(gst).toBe(0);
+    
+    // Re-check GST
+    await invoicePage.includeGSTCheckbox.check();
+    await page.waitForTimeout(100);
+    
+    // Verify GST is calculated again
+    gst = await invoicePage.getGSTAmount();
+    const total = await invoicePage.getTotalAmount();
+    expect(gst).toBeCloseTo(15, 2);
+    expect(total).toBeCloseTo(115, 2);
+  });
+
+  test('should hide GST row when GST is not included', async ({ page }) => {
+    await invoicePage.fillGenericItem(0, {
+      description: 'Test Item',
+      quantity: 1,
+      unitPrice: 100
+    });
+    
+    await page.waitForTimeout(100);
+    
+    // GST row should be visible initially
+    const gstRow = page.locator('#gstRow');
+    await expect(gstRow).toBeVisible();
+    
+    // Uncheck GST
+    await invoicePage.includeGSTCheckbox.uncheck();
+    await page.waitForTimeout(100);
+    
+    // GST row should be hidden
+    await expect(gstRow).toBeHidden();
+  });
+
+  test('should update labels when GST is excluded', async ({ page }) => {
+    await invoicePage.fillGenericItem(0, {
+      description: 'Test Item',
+      quantity: 1,
+      unitPrice: 100
+    });
+    
+    await page.waitForTimeout(100);
+    
+    // Initially should show GST labels
+    await expect(page.getByText('Subtotal (excl. GST):')).toBeVisible();
+    await expect(page.getByText('Total (incl. GST):')).toBeVisible();
+    
+    // Uncheck GST
+    await invoicePage.includeGSTCheckbox.uncheck();
+    await page.waitForTimeout(100);
+    
+    // Labels should change to non-GST versions
+    await expect(page.locator('#subtotalLabel')).toHaveText('Subtotal:');
+    await expect(page.locator('#totalLabel')).toHaveText('Total:');
+  });
+
+  test('should persist GST preference between sessions', async ({ page }) => {
+    // Uncheck GST
+    await invoicePage.includeGSTCheckbox.uncheck();
+    await page.waitForTimeout(200);
+    
+    // Verify it's unchecked
+    await expect(invoicePage.includeGSTCheckbox).not.toBeChecked();
+    
+    // Reload the page
+    await page.reload();
+    await page.waitForTimeout(500);
+    
+    // GST checkbox should still be unchecked
+    const checkbox = page.locator('#includeGST');
+    await expect(checkbox).not.toBeChecked();
+    
+    // Re-check GST
+    await checkbox.check();
+    await page.waitForTimeout(200);
+    
+    // Reload again
+    await page.reload();
+    await page.waitForTimeout(500);
+    
+    // GST checkbox should now be checked
+    await expect(page.locator('#includeGST')).toBeChecked();
   });
 });
