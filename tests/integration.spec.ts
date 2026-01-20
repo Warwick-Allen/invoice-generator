@@ -33,6 +33,8 @@ test.describe('End-to-End Invoice Creation Flow', () => {
     await page.getByLabel('Invoice Number *').fill('E2E-2026-001');
     await page.getByLabel('Invoice Date *').fill('2026-01-20');
     await page.getByLabel('Due Date').fill('2026-02-20');
+    await page.getByLabel('Invoice Period Start (optional)').fill('2026-01-01');
+    await page.getByLabel('Invoice Period End (optional)').fill('2026-01-31');
     
     // Step 7: Add invoice items
     await page.getByRole('button', { name: /Add Item/i }).click();
@@ -335,5 +337,60 @@ test.describe('End-to-End Invoice Creation Flow', () => {
     const hoursHeaders = await table.getByText('Hours').count();
     expect(dateHeaders).toBe(0);
     expect(hoursHeaders).toBe(0);
+  });
+
+  test('complete invoice with period dates', async ({ page }) => {
+    const invoicePage = new InvoiceGeneratorPage(page);
+    await page.goto('/');
+    
+    // Setup business details
+    await invoicePage.fillBusinessDetails({
+      name: 'Period Test Company',
+      email: 'period@company.com',
+      address: '789 Period Lane'
+    });
+    
+    await invoicePage.fillBankDetails({
+      bankName: 'Period Bank',
+      accountName: 'Period Test Company',
+      accountNumber: '33-4444-5555555-00'
+    });
+    
+    // Setup client
+    await invoicePage.fillClientDetails({
+      name: 'Monthly Client',
+      address: '987 Monthly Rd'
+    });
+    
+    // Setup invoice details with period
+    await invoicePage.fillInvoiceDetails({
+      invoiceNumber: 'PERIOD-2026-001',
+      invoiceDate: '2026-01-31',
+      dueDate: '2026-02-15',
+      periodStart: '2026-01-01',
+      periodEnd: '2026-01-31'
+    });
+    
+    // Add invoice item
+    await invoicePage.fillGenericItem(0, {
+      description: 'Monthly Subscription',
+      quantity: 1,
+      unitPrice: 2500
+    });
+    
+    // Generate invoice
+    await invoicePage.generateInvoice();
+    
+    // Verify invoice preview is visible
+    const preview = page.locator('.invoice-preview');
+    await expect(preview).toBeVisible({ timeout: 10000 });
+    
+    // Check that period is displayed in the invoice header
+    await expect(preview).toContainText('Period:');
+    await expect(preview).toContainText('1 January 2026');
+    
+    // Check invoice number and description are present
+    await expect(preview).toContainText('PERIOD-2026-001');
+    await expect(preview).toContainText('Monthly Subscription');
   });
 });

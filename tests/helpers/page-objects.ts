@@ -37,6 +37,8 @@ export class InvoiceGeneratorPage {
   readonly invoiceNumber: Locator;
   readonly invoiceDate: Locator;
   readonly dueDate: Locator;
+  readonly periodStart: Locator;
+  readonly periodEnd: Locator;
 
   // Invoice Items
   readonly addItemButton: Locator;
@@ -84,6 +86,8 @@ export class InvoiceGeneratorPage {
     this.invoiceNumber = page.getByLabel('Invoice Number *');
     this.invoiceDate = page.getByLabel('Invoice Date *');
     this.dueDate = page.getByLabel('Due Date');
+    this.periodStart = page.getByLabel('Invoice Period Start (optional)');
+    this.periodEnd = page.getByLabel('Invoice Period End (optional)');
 
     // Invoice Items
     this.addItemButton = page.getByRole('button', { name: /Add Item/i });
@@ -167,11 +171,19 @@ export class InvoiceGeneratorPage {
     invoiceNumber: string;
     invoiceDate: string;
     dueDate?: string;
+    periodStart?: string;
+    periodEnd?: string;
   }) {
     await this.invoiceNumber.fill(details.invoiceNumber);
     await this.invoiceDate.fill(details.invoiceDate);
     if (details.dueDate) {
       await this.dueDate.fill(details.dueDate);
+    }
+    if (details.periodStart) {
+      await this.periodStart.fill(details.periodStart);
+    }
+    if (details.periodEnd) {
+      await this.periodEnd.fill(details.periodEnd);
     }
   }
 

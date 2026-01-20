@@ -406,6 +406,16 @@
                 <input type="date" id="dueDate">
             </div>
         </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="periodStart">Invoice Period Start <span class="optional-label">(optional)</span></label>
+                <input type="date" id="periodStart">
+            </div>
+            <div class="form-group">
+                <label for="periodEnd">Invoice Period End <span class="optional-label">(optional)</span></label>
+                <input type="date" id="periodEnd">
+            </div>
+        </div>
 
         <!-- Invoice Items -->
         <h2>Invoice Items</h2>
@@ -776,6 +786,8 @@
             const invoiceNumber = document.getElementById('invoiceNumber').value;
             const invoiceDate = document.getElementById('invoiceDate').value;
             const dueDate = document.getElementById('dueDate').value;
+            const periodStart = document.getElementById('periodStart').value;
+            const periodEnd = document.getElementById('periodEnd').value;
 
             if (!trader.name || !trader.email || !trader.address || !trader.accountName || !trader.bankName || !trader.accountNumber) {
                 alert('Please fill in all required business details, including bank account information');
@@ -842,6 +854,7 @@
                         <strong>Invoice #:</strong> ${invoiceNumber}<br>
                         <strong>Date:</strong> ${formatDate(invoiceDate)}<br>
                         ${dueDate ? `<strong>Due Date:</strong> ${formatDate(dueDate)}<br>` : ''}
+                        ${periodStart || periodEnd ? `<strong>Period:</strong> ${periodStart ? formatDate(periodStart) : ''} ${periodStart && periodEnd ? ' - ' : ''} ${periodEnd ? formatDate(periodEnd) : ''}<br>` : ''}
                     </div>
                 </div>
 
@@ -971,6 +984,8 @@
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('invoiceDate').value = today;
                 document.getElementById('dueDate').value = '';
+                document.getElementById('periodStart').value = '';
+                document.getElementById('periodEnd').value = '';
 
                 // Generate next invoice number
                 const lastInvoiceNum = getCookie('nz_invoice_last_number') || 0;
