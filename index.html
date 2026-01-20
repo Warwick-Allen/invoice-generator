@@ -130,13 +130,21 @@
 
         .invoice-item {
             display: grid;
-            grid-template-columns: 3fr 1fr 1fr 1fr auto;
+            grid-template-columns: auto 3fr 1fr 1fr 1fr auto;
             gap: 10px;
             align-items: end;
             margin-bottom: 10px;
             padding: 10px;
             background: #f8f9fa;
             border-radius: 4px;
+        }
+
+        .invoice-item.hourly {
+            grid-template-columns: auto 1fr 3fr 1fr 1fr 1fr auto;
+        }
+
+        .invoice-item .form-group.hidden {
+            display: none;
         }
 
         .invoice-item button {
@@ -631,15 +639,30 @@
             
             itemDiv.innerHTML = `
                 <div class="form-group">
+                    <label>Type</label>
+                    <select class="item-type" onchange="updateItemFields('item-${invoiceItemCount}')">
+                        <option value="generic">Generic</option>
+                        <option value="hourly">Hourly Rate</option>
+                    </select>
+                </div>
+                <div class="form-group item-date-field hidden">
+                    <label>Date</label>
+                    <input type="date" class="item-date" onchange="calculateTotals()">
+                </div>
+                <div class="form-group">
                     <label>Description</label>
                     <input type="text" class="item-description" onchange="calculateTotals()">
                 </div>
-                <div class="form-group">
+                <div class="form-group item-quantity-field">
                     <label>Quantity</label>
                     <input type="number" class="item-quantity" value="1" min="0" step="0.01" onchange="calculateTotals()">
                 </div>
-                <div class="form-group">
-                    <label>Rate ($)</label>
+                <div class="form-group item-hours-field hidden">
+                    <label>Hours</label>
+                    <input type="number" class="item-hours" value="0" min="0" step="0.25" onchange="calculateTotals()">
+                </div>
+                <div class="form-group item-rate-field">
+                    <label>Unit Price ($)</label>
                     <input type="number" class="item-rate" value="0" min="0" step="0.01" onchange="calculateTotals()">
                 </div>
                 <div class="form-group">
@@ -661,14 +684,61 @@
             }
         }
 
+        function updateItemFields(itemId) {
+            const item = document.getElementById(itemId);
+            const type = item.querySelector('.item-type').value;
+            
+            const dateField = item.querySelector('.item-date-field');
+            const quantityField = item.querySelector('.item-quantity-field');
+            const hoursField = item.querySelector('.item-hours-field');
+            const rateField = item.querySelector('.item-rate-field');
+            const rateLabel = rateField.querySelector('label');
+            
+            if (type === 'hourly') {
+                // Show hourly fields, hide generic fields
+                item.classList.add('hourly');
+                dateField.classList.remove('hidden');
+                hoursField.classList.remove('hidden');
+                quantityField.classList.add('hidden');
+                rateLabel.textContent = 'Rate ($)';
+                
+                // Set default values
+                item.querySelector('.item-hours').value = item.querySelector('.item-hours').value || '0';
+                if (!item.querySelector('.item-date').value) {
+                    item.querySelector('.item-date').value = new Date().toISOString().split('T')[0];
+                }
+            } else {
+                // Show generic fields, hide hourly fields
+                item.classList.remove('hourly');
+                dateField.classList.add('hidden');
+                hoursField.classList.add('hidden');
+                quantityField.classList.remove('hidden');
+                rateLabel.textContent = 'Unit Price ($)';
+                
+                // Set default values
+                item.querySelector('.item-quantity').value = item.querySelector('.item-quantity').value || '1';
+            }
+            
+            calculateTotals();
+        }
+
         function calculateTotals() {
             const items = document.querySelectorAll('.invoice-item');
             let subtotal = 0;
 
             items.forEach(item => {
-                const quantity = parseFloat(item.querySelector('.item-quantity').value) || 0;
-                const rate = parseFloat(item.querySelector('.item-rate').value) || 0;
-                const amount = quantity * rate;
+                const type = item.querySelector('.item-type').value;
+                let amount = 0;
+                
+                if (type === 'hourly') {
+                    const hours = parseFloat(item.querySelector('.item-hours').value) || 0;
+                    const rate = parseFloat(item.querySelector('.item-rate').value) || 0;
+                    amount = hours * rate;
+                } else {
+                    const quantity = parseFloat(item.querySelector('.item-quantity').value) || 0;
+                    const rate = parseFloat(item.querySelector('.item-rate').value) || 0;
+                    amount = quantity * rate;
+                }
                 
                 item.querySelector('.item-amount').value = amount.toFixed(2);
                 subtotal += amount;
@@ -725,13 +795,30 @@
             // Get invoice items
             const items = [];
             document.querySelectorAll('.invoice-item').forEach(item => {
+                const type = item.querySelector('.item-type').value;
                 const description = item.querySelector('.item-description').value;
-                const quantity = parseFloat(item.querySelector('.item-quantity').value) || 0;
                 const rate = parseFloat(item.querySelector('.item-rate').value) || 0;
-                const amount = quantity * rate;
-
-                if (description && quantity > 0) {
-                    items.push({ description, quantity, rate, amount });
+                
+                let itemData = { type, description, rate };
+                let amount = 0;
+                
+                if (type === 'hourly') {
+                    const date = item.querySelector('.item-date').value;
+                    const hours = parseFloat(item.querySelector('.item-hours').value) || 0;
+                    amount = hours * rate;
+                    itemData = { ...itemData, date, hours, amount };
+                    
+                    if (description && hours > 0) {
+                        items.push(itemData);
+                    }
+                } else {
+                    const quantity = parseFloat(item.querySelector('.item-quantity').value) || 0;
+                    amount = quantity * rate;
+                    itemData = { ...itemData, quantity, amount };
+                    
+                    if (description && quantity > 0) {
+                        items.push(itemData);
+                    }
                 }
             });
 
@@ -779,21 +866,40 @@
                 <table class="invoice-table">
                     <thead>
                         <tr>
+                            ${items.some(item => item.type === 'hourly') ? '<th>Date</th>' : ''}
                             <th>Description</th>
-                            <th class="text-right">Quantity</th>
-                            <th class="text-right">Rate</th>
+                            ${items.some(item => item.type === 'hourly') ? '<th class="text-right">Hours</th>' : ''}
+                            ${items.some(item => item.type === 'generic') ? '<th class="text-right">Quantity</th>' : ''}
+                            <th class="text-right">${items.some(item => item.type === 'hourly') && items.some(item => item.type === 'generic') ? 'Unit Price/Rate' : items.some(item => item.type === 'hourly') ? 'Rate' : 'Unit Price'}</th>
                             <th class="text-right">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${items.map(item => `
-                            <tr>
-                                <td>${item.description}</td>
-                                <td class="text-right">${item.quantity}</td>
-                                <td class="text-right">$${item.rate.toFixed(2)}</td>
-                                <td class="text-right">$${item.amount.toFixed(2)}</td>
-                            </tr>
-                        `).join('')}
+                        ${items.map(item => {
+                            if (item.type === 'hourly') {
+                                return `
+                                    <tr>
+                                        <td>${formatDate(item.date)}</td>
+                                        <td>${item.description}</td>
+                                        <td class="text-right">${item.hours}</td>
+                                        ${items.some(i => i.type === 'generic') ? '<td class="text-right">-</td>' : ''}
+                                        <td class="text-right">$${item.rate.toFixed(2)}</td>
+                                        <td class="text-right">$${item.amount.toFixed(2)}</td>
+                                    </tr>
+                                `;
+                            } else {
+                                return `
+                                    <tr>
+                                        ${items.some(i => i.type === 'hourly') ? '<td>-</td>' : ''}
+                                        <td>${item.description}</td>
+                                        ${items.some(i => i.type === 'hourly') ? '<td class="text-right">-</td>' : ''}
+                                        <td class="text-right">${item.quantity}</td>
+                                        <td class="text-right">$${item.rate.toFixed(2)}</td>
+                                        <td class="text-right">$${item.amount.toFixed(2)}</td>
+                                    </tr>
+                                `;
+                            }
+                        }).join('')}
                     </tbody>
                 </table>
 

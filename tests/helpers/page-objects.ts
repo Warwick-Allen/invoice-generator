@@ -179,6 +179,56 @@ export class InvoiceGeneratorPage {
     await this.addItemButton.click();
   }
 
+  async fillGenericItem(index: number, details: {
+    description: string;
+    quantity: number;
+    unitPrice: number;
+  }) {
+    const items = this.page.locator('.invoice-item');
+    const item = items.nth(index);
+    
+    await item.locator('.item-type').selectOption('generic');
+    await this.page.waitForTimeout(100);
+    
+    await item.locator('.item-description').fill(details.description);
+    await item.locator('.item-quantity').fill(details.quantity.toString());
+    await item.locator('.item-quantity').blur();
+    await item.locator('.item-rate').fill(details.unitPrice.toString());
+    await item.locator('.item-rate').blur();
+    
+    // Give time for calculations
+    await this.page.waitForTimeout(100);
+  }
+
+  async fillHourlyItem(index: number, details: {
+    date: string;
+    description: string;
+    hours: number;
+    rate: number;
+  }) {
+    const items = this.page.locator('.invoice-item');
+    const item = items.nth(index);
+    
+    await item.locator('.item-type').selectOption('hourly');
+    await this.page.waitForTimeout(100);
+    
+    await item.locator('.item-date').fill(details.date);
+    await item.locator('.item-description').fill(details.description);
+    await item.locator('.item-hours').fill(details.hours.toString());
+    await item.locator('.item-hours').blur();
+    await item.locator('.item-rate').fill(details.rate.toString());
+    await item.locator('.item-rate').blur();
+    
+    // Give time for calculations
+    await this.page.waitForTimeout(100);
+  }
+
+  async getItemType(index: number): Promise<string> {
+    const items = this.page.locator('.invoice-item');
+    const item = items.nth(index);
+    return await item.locator('.item-type').inputValue();
+  }
+
   async generateInvoice() {
     await this.generateInvoiceButton.click();
   }

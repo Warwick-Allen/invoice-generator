@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { InvoiceGeneratorPage } from './helpers/page-objects';
 
 test.describe('End-to-End Invoice Creation Flow', () => {
   test('complete invoice creation workflow', async ({ page }) => {
@@ -119,5 +120,220 @@ test.describe('End-to-End Invoice Creation Flow', () => {
     
     await clientSelect.selectOption({ label: 'Client Two' });
     await expect(page.getByLabel('Client Name *')).toHaveValue('Client Two');
+  });
+
+  test('invoice generation with mixed item types', async ({ page }) => {
+    const invoicePage = new InvoiceGeneratorPage(page);
+    await page.goto('/');
+    
+    // Setup business details
+    await invoicePage.fillBusinessDetails({
+      name: 'Mixed Items Business',
+      email: 'mixed@test.com',
+      address: '123 Test St'
+    });
+    
+    await invoicePage.fillBankDetails({
+      bankName: 'Test Bank',
+      accountName: 'Mixed Items Business',
+      accountNumber: '12-3456-7890123-00'
+    });
+    
+    // Setup client
+    await invoicePage.fillClientDetails({
+      name: 'Test Client',
+      address: '456 Client Rd'
+    });
+    
+    // Setup invoice details
+    await invoicePage.fillInvoiceDetails({
+      invoiceNumber: 'MIX-001',
+      invoiceDate: '2026-01-20'
+    });
+    
+    // Add a generic item
+    await invoicePage.fillGenericItem(0, {
+      description: 'Software License',
+      quantity: 5,
+      unitPrice: 200
+    });
+    
+    // Add an hourly rate item
+    await page.getByRole('button', { name: /Add Item/i }).click();
+    await invoicePage.fillHourlyItem(1, {
+      date: '2026-01-18',
+      description: 'Consulting Services',
+      hours: 6.5,
+      rate: 150
+    });
+    
+    // Add another generic item
+    await page.getByRole('button', { name: /Add Item/i }).click();
+    await invoicePage.fillGenericItem(2, {
+      description: 'Hardware',
+      quantity: 2,
+      unitPrice: 350
+    });
+    
+    await page.waitForTimeout(200);
+    
+    // Verify calculations
+    // 5*200 + 6.5*150 + 2*350 = 1000 + 975 + 700 = 2675
+    const subtotal = await invoicePage.getSubtotalAmount();
+    expect(subtotal).toBeCloseTo(2675, 2);
+    
+    // GST = 2675 * 0.15 = 401.25
+    const gst = await invoicePage.getGSTAmount();
+    expect(gst).toBeCloseTo(401.25, 2);
+    
+    // Total = 2675 + 401.25 = 3076.25
+    const total = await invoicePage.getTotalAmount();
+    expect(total).toBeCloseTo(3076.25, 2);
+    
+    // Generate invoice
+    await invoicePage.generateInvoice();
+    await page.waitForTimeout(500);
+    
+    // Verify invoice preview contains both item types
+    const preview = page.locator('.invoice-preview');
+    await expect(preview).toBeVisible();
+    
+    // Should have mixed columns
+    await expect(preview.getByText('Software License')).toBeVisible();
+    await expect(preview.getByText('Consulting Services')).toBeVisible();
+    await expect(preview.getByText('Hardware')).toBeVisible();
+    
+    // Check for appropriate headers (should show all columns when mixed)
+    const table = preview.locator('.invoice-table');
+    await expect(table.getByText('Date')).toBeVisible();
+    await expect(table.getByText('Hours')).toBeVisible();
+    await expect(table.getByText('Quantity')).toBeVisible();
+  });
+
+  test('invoice generation with only hourly items', async ({ page }) => {
+    const invoicePage = new InvoiceGeneratorPage(page);
+    await page.goto('/');
+    
+    // Setup business details
+    await invoicePage.fillBusinessDetails({
+      name: 'Hourly Business',
+      email: 'hourly@test.com',
+      address: '789 Hourly Ave'
+    });
+    
+    await invoicePage.fillBankDetails({
+      bankName: 'Hourly Bank',
+      accountName: 'Hourly Business',
+      accountNumber: '11-2222-3333333-00'
+    });
+    
+    // Setup client
+    await invoicePage.fillClientDetails({
+      name: 'Hourly Client',
+      address: '321 Hourly Rd'
+    });
+    
+    // Setup invoice details
+    await invoicePage.fillInvoiceDetails({
+      invoiceNumber: 'HRL-001',
+      invoiceDate: '2026-01-20'
+    });
+    
+    // Add hourly items only
+    await invoicePage.fillHourlyItem(0, {
+      date: '2026-01-15',
+      description: 'Development Work',
+      hours: 8,
+      rate: 125
+    });
+    
+    await page.getByRole('button', { name: /Add Item/i }).click();
+    await invoicePage.fillHourlyItem(1, {
+      date: '2026-01-16',
+      description: 'Code Review',
+      hours: 3,
+      rate: 125
+    });
+    
+    await page.waitForTimeout(200);
+    
+    // Generate and verify
+    await invoicePage.generateInvoice();
+    await page.waitForTimeout(500);
+    
+    const preview = page.locator('.invoice-preview');
+    const table = preview.locator('.invoice-table');
+    
+    // Should show Date and Hours columns
+    await expect(table.getByText('Date')).toBeVisible();
+    await expect(table.getByText('Hours')).toBeVisible();
+    await expect(table.getByText('Rate')).toBeVisible();
+    
+    // Should NOT show Quantity column
+    const quantityHeaders = await table.getByText('Quantity').count();
+    expect(quantityHeaders).toBe(0);
+  });
+
+  test('invoice generation with only generic items', async ({ page }) => {
+    const invoicePage = new InvoiceGeneratorPage(page);
+    await page.goto('/');
+    
+    // Setup business details
+    await invoicePage.fillBusinessDetails({
+      name: 'Generic Business',
+      email: 'generic@test.com',
+      address: '456 Generic Blvd'
+    });
+    
+    await invoicePage.fillBankDetails({
+      bankName: 'Generic Bank',
+      accountName: 'Generic Business',
+      accountNumber: '22-3333-4444444-00'
+    });
+    
+    // Setup client
+    await invoicePage.fillClientDetails({
+      name: 'Generic Client',
+      address: '654 Generic St'
+    });
+    
+    // Setup invoice details
+    await invoicePage.fillInvoiceDetails({
+      invoiceNumber: 'GEN-001',
+      invoiceDate: '2026-01-20'
+    });
+    
+    // Add generic items only
+    await invoicePage.fillGenericItem(0, {
+      description: 'Product A',
+      quantity: 10,
+      unitPrice: 50
+    });
+    
+    await page.getByRole('button', { name: /Add Item/i }).click();
+    await invoicePage.fillGenericItem(1, {
+      description: 'Product B',
+      quantity: 5,
+      unitPrice: 100
+    });
+    
+    await page.waitForTimeout(200);
+    
+    // Generate and verify
+    await invoicePage.generateInvoice();
+    await page.waitForTimeout(500);
+    
+    const preview = page.locator('.invoice-preview');
+    const table = preview.locator('.invoice-table');
+    
+    // Should show Quantity and Unit Price columns
+    await expect(table.getByText('Quantity')).toBeVisible();
+    await expect(table.getByText('Unit Price')).toBeVisible();
+    
+    // Should NOT show Date or Hours columns
+    const dateHeaders = await table.getByText('Date').count();
+    const hoursHeaders = await table.getByText('Hours').count();
+    expect(dateHeaders).toBe(0);
+    expect(hoursHeaders).toBe(0);
   });
 });
