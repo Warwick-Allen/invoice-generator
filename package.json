@@ -1,0 +1,25 @@
+{
+  "name": "invoice-generator-tests",
+  "version": "1.0.0",
+  "description": "Test suite for NZ Tax Invoice Generator",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:mobile": "playwright test --project='Mobile Chrome' --project='Mobile Safari'",
+    "report": "playwright show-report",
+    "trace": "playwright show-trace",
+    "codegen": "playwright codegen https://warwick-allen.github.io/invoice-generator/"
+  },
+  "keywords": ["playwright", "testing", "e2e", "invoice", "nz"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.41.0",
+    "@types/node": "^20.11.0"
+  }
+}

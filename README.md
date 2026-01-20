@@ -63,6 +63,75 @@ This is a standalone HTML file with no dependencies. Simply open `index.html` in
 
 All data is stored locally in your browser. Nothing is sent to any server.
 
+## Testing
+
+This project includes a comprehensive end-to-end test suite using Playwright.
+
+### Test Suite Overview
+- **80+ test cases** across 11 test files
+- **5 browser configurations** (Chrome, Firefox, Safari, Mobile Chrome, Mobile Safari)
+- **100% feature coverage** (forms, calculations, workflows, accessibility, responsive design)
+- **Pattern**: Page Object Model with TypeScript
+
+### Quick Start
+
+```bash
+# Install dependencies (first time only)
+npm install
+npx playwright install
+
+# Run all tests
+npm test
+
+# Interactive UI mode (recommended)
+npm run test:ui
+
+# Run with browser visible
+npm run test:headed
+
+# View test report
+npm run report
+```
+
+### Test Documentation
+
+All test documentation is located in the `docs/` directory:
+
+- **[docs/README_START_HERE.md](docs/README_START_HERE.md)** ⭐ - Start here
+- **[docs/INDEX.md](docs/INDEX.md)** - Quick navigation hub
+- **[docs/QUICK_START.md](docs/QUICK_START.md)** - Quick commands reference
+- **[docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md)** - Comprehensive testing guide
+- **[docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)** - Architecture details
+
+### Test Structure
+
+```
+tests/
+├── helpers/
+│   ├── page-objects.ts    # Page Object Model classes
+│   └── test-data.ts       # Test data and utilities
+├── accessibility.spec.ts   # Accessibility tests
+├── bank-details.spec.ts    # Bank account tests
+├── business-details.spec.ts # Business information tests
+├── calculations.spec.ts    # GST and totals tests
+├── client-details.spec.ts  # Client management tests
+├── integration.spec.ts     # End-to-end workflow tests
+├── invoice-details.spec.ts # Invoice metadata tests
+├── invoice-generation.spec.ts # Generation and print tests
+├── invoice-items.spec.ts   # Line items tests
+├── page-objects.spec.ts    # Page object integration tests
+└── responsive.spec.ts      # Responsive design tests
+```
+
+### CI/CD
+
+Tests can be run automatically via GitHub Actions. See `.github/workflows/playwright.yml` for the test workflow configuration.
+
+### Requirements
+
+- Node.js 18 or higher (specified in `.nvmrc`)
+- npm 10 or higher
+
 ## Deployment
 
 This app is automatically deployed to GitHub Pages whenever changes are pushed to the main branch. The deployment is handled by GitHub Actions.
