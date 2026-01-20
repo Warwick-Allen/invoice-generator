@@ -2,6 +2,8 @@
 
 A single-page, in-browser invoice generator specifically designed for New Zealand sole traders.
 
+🔗 **Live App**: [https://warwick-allen.github.io/invoice-generator/](https://warwick-allen.github.io/invoice-generator/)
+
 ## Features
 
 - **No Database Required**: All data is stored in browser cookies
@@ -17,12 +19,15 @@ A single-page, in-browser invoice generator specifically designed for New Zealan
 
 ## Usage
 
-1. Open `index.html` in any modern web browser
-2. Fill in your business details (saved to browser cookies)
-3. Add or select client details
-4. Add invoice line items
-5. Click "Generate Invoice" to preview
-6. Print or save as PDF
+**Online**: Simply visit [https://warwick-allen.github.io/invoice-generator/](https://warwick-allen.github.io/invoice-generator/)
+
+**Offline**: Open `index.html` in any modern web browser
+
+1. Fill in your business details (saved to browser cookies)
+2. Add or select client details
+3. Add invoice line items
+4. Click "Generate Invoice" to preview
+5. Print or save as PDF
 
 ## Bank Account Details
 
@@ -57,3 +62,7 @@ This is a standalone HTML file with no dependencies. Simply open `index.html` in
 ## Privacy
 
 All data is stored locally in your browser. Nothing is sent to any server.
+
+## Deployment
+
+This app is automatically deployed to GitHub Pages whenever changes are pushed to the main branch. The deployment is handled by GitHub Actions.
