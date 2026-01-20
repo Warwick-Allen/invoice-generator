@@ -56,6 +56,12 @@ export class InvoiceGeneratorPage {
   readonly printInvoiceButton: Locator;
   readonly resetFormButton: Locator;
 
+  // About Modal
+  readonly aboutButton: Locator;
+  readonly aboutModal: Locator;
+  readonly aboutModalTitle: Locator;
+  readonly aboutModalCloseButton: Locator;
+
   constructor(page: Page) {
     this.page = page;
 
@@ -107,6 +113,12 @@ export class InvoiceGeneratorPage {
     this.generateInvoiceButton = page.getByRole('button', { name: 'Generate Invoice' });
     this.printInvoiceButton = page.getByRole('button', { name: 'Print Invoice' });
     this.resetFormButton = page.getByRole('button', { name: 'Reset Form' });
+
+    // About Modal
+    this.aboutButton = page.getByRole('button', { name: 'About' });
+    this.aboutModal = page.locator('#aboutModal');
+    this.aboutModalTitle = page.getByRole('heading', { name: 'About NZ Tax Invoice Generator' });
+    this.aboutModalCloseButton = page.getByRole('button', { name: 'Close' });
   }
 
   async goto() {
@@ -292,5 +304,17 @@ export class InvoiceGeneratorPage {
   async getTotalAmount(): Promise<number> {
     const text = await this.getTotal();
     return this.extractAmount(text);
+  }
+
+  async openAboutModal() {
+    await this.aboutButton.click();
+  }
+
+  async closeAboutModal() {
+    await this.aboutModalCloseButton.click();
+  }
+
+  async isAboutModalOpen(): Promise<boolean> {
+    return await this.aboutModal.evaluate((el) => el.classList.contains('active'));
   }
 }

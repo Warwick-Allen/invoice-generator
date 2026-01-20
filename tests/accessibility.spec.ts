@@ -20,10 +20,10 @@ test.describe('Accessibility', () => {
 
   test('should have section headings', async ({ page }) => {
     // Check for section headings
-    await expect(page.getByText('Your Business Details')).toBeVisible();
-    await expect(page.getByText('Bank Account Details')).toBeVisible();
-    await expect(page.getByText('Client Details')).toBeVisible();
-    await expect(page.getByText('Invoice Details')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your Business Details' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Bank Account Details' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Client Details' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Invoice Details' })).toBeVisible();
   });
 
   test('form fields should have associated labels', async ({ page }) => {
@@ -103,7 +103,7 @@ test.describe('Accessibility', () => {
     ];
     
     for (const section of sections) {
-      await expect(page.getByText(section)).toBeVisible();
+      await expect(page.getByRole('heading', { name: section })).toBeVisible();
     }
   });
 });

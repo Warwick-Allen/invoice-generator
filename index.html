@@ -302,11 +302,129 @@
             font-size: 12px;
             font-weight: normal;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #666;
+            cursor: pointer;
+            padding: 0;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            border-radius: 50%;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-section {
+            margin-bottom: 20px;
+        }
+
+        .modal-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .modal-section p, .modal-section ul {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .modal-section ul {
+            padding-left: 20px;
+        }
+
+        .modal-section li {
+            margin-bottom: 8px;
+        }
+
+        .about-button {
+            background: #6c757d;
+            margin-left: auto;
+        }
+
+        .about-button:hover {
+            background: #545b62;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>NZ Tax Invoice Generator</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1 style="margin: 0;">NZ Tax Invoice Generator</h1>
+            <button class="about-button" onclick="openAboutModal()">About</button>
+        </div>
 
         <!-- Trader Details Section -->
         <h2>Your Business Details</h2>
@@ -461,6 +579,69 @@
         <!-- Invoice Preview -->
         <div class="invoice-preview" id="invoicePreview">
             <!-- Invoice will be rendered here -->
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal" onclick="closeAboutModalOnBackdrop(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>About NZ Tax Invoice Generator</h2>
+                <button class="modal-close" onclick="closeAboutModal()" aria-label="Close">&times;</button>
+            </div>
+            
+            <div class="modal-section">
+                <h3>What is this app?</h3>
+                <p>NZ Tax Invoice Generator is a free, easy-to-use tool for creating professional tax invoices that comply with New Zealand GST requirements. All your data is stored locally in your browser—nothing is sent to any server.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Save Your Details:</strong> Store your business and bank account information for quick reuse</li>
+                    <li><strong>Client Management:</strong> Save multiple clients and select them from a dropdown</li>
+                    <li><strong>Flexible Invoicing:</strong> Support for both generic items and hourly rate billing</li>
+                    <li><strong>GST Options:</strong> Toggle GST on/off depending on your registration status</li>
+                    <li><strong>Professional Output:</strong> Generate print-ready invoices with all required information</li>
+                    <li><strong>Local Storage:</strong> All data is stored in your browser using cookies—no server required</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>How to Use</h3>
+                <p><strong>First Time Setup:</strong></p>
+                <ol style="padding-left: 20px; line-height: 1.8;">
+                    <li>Fill in your business details including bank account information</li>
+                    <li>Click "Save My Details" to store your information</li>
+                    <li>Add client details and click "Save Client"</li>
+                </ol>
+                <p><strong>Creating an Invoice:</strong></p>
+                <ol style="padding-left: 20px; line-height: 1.8;">
+                    <li>Select a saved client or enter new client details</li>
+                    <li>Verify the invoice number and date (auto-generated)</li>
+                    <li>Add invoice items using the "+ Add Item" button</li>
+                    <li>Toggle GST inclusion if needed (enabled by default)</li>
+                    <li>Click "Generate Invoice" to preview</li>
+                    <li>Click "Print Invoice" to print or save as PDF</li>
+                </ol>
+            </div>
+
+            <div class="modal-section">
+                <h3>Data Storage</h3>
+                <p>This app stores all your information locally in your browser using cookies. Your data never leaves your computer. The stored information includes:</p>
+                <ul>
+                    <li>Your business details and bank account information</li>
+                    <li>Saved client information</li>
+                    <li>GST preference</li>
+                    <li>Last invoice number</li>
+                </ul>
+                <p><strong>Note:</strong> If you clear your browser cookies, all stored data will be lost.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>Bank Account Verification</h3>
+                <p>New Zealand banks now verify that the account name matches the account number. Please ensure your account name is entered exactly as it appears with your bank to avoid payment issues.</p>
+            </div>
         </div>
     </div>
 
@@ -1050,6 +1231,33 @@
                 calculateTotals();
             }
         }
+
+        // About Modal Functions
+        function openAboutModal() {
+            document.getElementById('aboutModal').classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        function closeAboutModalOnBackdrop(event) {
+            if (event.target.id === 'aboutModal') {
+                closeAboutModal();
+            }
+        }
+
+        // Allow closing modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('aboutModal');
+                if (modal.classList.contains('active')) {
+                    closeAboutModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>
